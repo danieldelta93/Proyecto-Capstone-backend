@@ -1,0 +1,20 @@
+# MySQL listo para desarrollo:   docker compose up -d
+# Crea la base y las tablas solas la primera vez (usa database/schema.sql).
+# Usa DB_PASSWORD y DB_NAME de tu archivo .env.
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: vendix-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-vendix123}
+      MYSQL_DATABASE: ${DB_NAME:-vendix}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - vendix_mysql:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+volumes:
+  vendix_mysql:

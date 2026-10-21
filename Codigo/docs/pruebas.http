@@ -1,0 +1,93 @@
+### Pruebas manuales de la API con la extensión "REST Client" de VS Code.
+### Pon el cursor en una petición y haz clic en "Send Request".
+### Primero ejecuta el registro (o el login) y copia el token en la variable @token.
+
+@url = http://localhost:3000/api
+@token = PEGA_AQUI_EL_TOKEN
+
+### Estado de la API y de la base de datos
+GET {{url}}/salud
+
+### Registro
+POST {{url}}/auth/registro
+Content-Type: application/json
+
+{ "correo": "carmen@correo.cl", "password": "secreto1", "nombreNegocio": "Puesto Doña Carmen", "nombreDueno": "Carmen" }
+
+### Login
+POST {{url}}/auth/login
+Content-Type: application/json
+
+{ "correo": "carmen@correo.cl", "password": "secreto1" }
+
+### Crear producto (compro a 3.000 y vendo a 5.000)
+POST {{url}}/productos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "nombre": "Gorro de lana", "categoria": "Gorros", "precioCompra": 3000, "precioVenta": 5000, "stock": 10, "stockMinimo": 3 }
+
+### Listar productos (con filtros opcionales)
+GET {{url}}/productos?buscar=gorro&stockBajo=0
+Authorization: Bearer {{token}}
+
+### Reponer stock (compré 5 más, ahora a 3.200 cada uno)
+POST {{url}}/productos/1/stock
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "tipo": "reposicion", "cantidad": 5, "precioCompra": 3200 }
+
+### Registrar venta
+POST {{url}}/ventas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "metodoPago": "Efectivo", "items": [ { "productoId": 1, "cantidad": 2 } ] }
+
+### Listar ventas
+GET {{url}}/ventas?desde=2026-10-01&metodoPago=Efectivo
+Authorization: Bearer {{token}}
+
+### Anular una venta (el stock vuelve al inventario)
+POST {{url}}/ventas/1/anular
+Authorization: Bearer {{token}}
+
+### Panel: resumen de los últimos 7 días
+GET {{url}}/estadisticas/resumen?dias=7
+Authorization: Bearer {{token}}
+
+### Panel: ventas por día
+GET {{url}}/estadisticas/ventas-por-dia?dias=7
+Authorization: Bearer {{token}}
+
+### Panel: ventas por semana
+GET {{url}}/estadisticas/ventas-por-periodo?agrupar=semana&dias=30
+Authorization: Bearer {{token}}
+
+### Panel: más vendidos / más ganancia / menos vendidos
+GET {{url}}/estadisticas/productos-mas-vendidos?dias=30&limite=5
+Authorization: Bearer {{token}}
+
+###
+GET {{url}}/estadisticas/productos-mas-vendidos?dias=30&orden=ganancia
+Authorization: Bearer {{token}}
+
+###
+GET {{url}}/estadisticas/productos-menos-vendidos?dias=30
+Authorization: Bearer {{token}}
+
+### Panel: alertas de stock bajo y valor del inventario
+GET {{url}}/estadisticas/stock-bajo
+Authorization: Bearer {{token}}
+
+###
+GET {{url}}/estadisticas/valor-inventario
+Authorization: Bearer {{token}}
+
+### Asistente
+POST {{url}}/asistente/preguntar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "pregunta": "¿Cuánto gané esta semana?" }

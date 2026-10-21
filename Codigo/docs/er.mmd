@@ -1,0 +1,63 @@
+erDiagram
+    USUARIOS ||--o{ CATEGORIAS : "tiene"
+    USUARIOS ||--o{ PRODUCTOS : "posee"
+    USUARIOS ||--o{ VENTAS : "registra"
+    CATEGORIAS |o--o{ PRODUCTOS : "clasifica"
+    VENTAS ||--|{ VENTA_ITEMS : "contiene"
+    PRODUCTOS |o--o{ VENTA_ITEMS : "se vende en"
+    PRODUCTOS ||--o{ MOVIMIENTOS_STOCK : "historial de"
+    VENTAS |o--o{ MOVIMIENTOS_STOCK : "origina"
+
+    USUARIOS {
+        int id PK
+        string correo UK
+        string password_hash
+        string nombre_dueno
+        string nombre_negocio
+        timestamp creado_en
+    }
+    CATEGORIAS {
+        int id PK
+        int usuario_id FK
+        string nombre
+    }
+    PRODUCTOS {
+        int id PK
+        int usuario_id FK
+        int categoria_id FK
+        string nombre
+        string descripcion
+        int precio_compra
+        int precio_venta
+        int stock
+        int stock_minimo
+        bool activo
+    }
+    VENTAS {
+        int id PK
+        int usuario_id FK
+        date fecha
+        int total
+        string metodo_pago
+        string estado
+        timestamp anulada_en
+    }
+    VENTA_ITEMS {
+        int id PK
+        int venta_id FK
+        int producto_id FK
+        string nombre_producto
+        int cantidad
+        int precio_unitario
+        int costo_unitario
+    }
+    MOVIMIENTOS_STOCK {
+        int id PK
+        int usuario_id FK
+        int producto_id FK
+        string tipo
+        int cantidad
+        int stock_resultante
+        int venta_id FK
+        string nota
+    }
