@@ -1,0 +1,17 @@
+flowchart LR
+  U(["Comerciante<br/>celular o computador"])
+  subgraph F["Frontend (repo Proyecto-Capstone-frontend)"]
+    R["React + Vite<br/>App instalable PWA<br/>gráficos con Chart.js"]
+  end
+  subgraph B["Backend (repo Proyecto-Capstone-backend)"]
+    RT["Rutas REST<br/>Node.js + Express"]
+    MW["Seguridad<br/>token JWT, límite de intentos,<br/>validación de datos"]
+    SV["Servicios<br/>lógica del negocio"]
+  end
+  DB[("MySQL 8<br/>6 tablas")]
+  IA["Proveedor de IA<br/>opcional"]
+  U --> R
+  R -- "HTTPS · JSON · token" --> RT
+  RT --> MW --> SV
+  SV -- "SQL con transacciones" --> DB
+  SV -. "solo si hay clave" .-> IA

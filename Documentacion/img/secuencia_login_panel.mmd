@@ -1,0 +1,28 @@
+sequenceDiagram
+  autonumber
+  actor C as Comerciante
+  participant F as Frontend (React)
+  participant A as API (Express)
+  participant S as Servicios
+  participant D as MySQL
+  C->>F: ingresa correo y contraseña
+  F->>A: POST /api/auth/login
+  A->>S: autenticar(correo, password)
+  S->>D: busca la cuenta por correo
+  D-->>S: usuario con hash de contraseña
+  S->>S: compara con scrypt
+  alt datos correctos
+    S-->>A: usuario
+    A-->>F: 200 con token de sesión (JWT)
+    F->>F: guarda el token y abre la app
+  else datos incorrectos
+    A-->>F: 401 "Correo o contraseña incorrectos"
+  end
+  C->>F: abre la pestaña Panel
+  F->>A: GET /api/estadisticas/resumen y ventas-por-dia (token)
+  A->>S: estadísticas(usuarioId)
+  S->>D: consultas SQL agregadas (SUM, COUNT, GROUP BY)
+  D-->>S: totales por día y por producto
+  S-->>A: resumen, tendencia, inversión y ganancia
+  A-->>F: 200 con los datos
+  F-->>C: dibuja los gráficos

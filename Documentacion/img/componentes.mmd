@@ -1,0 +1,35 @@
+flowchart TB
+  subgraph FE["Frontend: componentes de React"]
+    direction TB
+    APP["App<br/>decide Login o app"]
+    LOGIN["Login"]
+    MAIN["MainApp<br/>carga y actualiza los datos"]
+    INV["Inventario"]
+    VEN["Ventas"]
+    PAN["Panel"]
+    ASI["Asistente"]
+    REP["Reportes"]
+    API["api/<br/>cliente.js · api.js · mapeos.js"]
+    APP --> LOGIN
+    APP --> MAIN
+    MAIN --> INV
+    MAIN --> VEN
+    MAIN --> PAN
+    MAIN --> ASI
+    MAIN --> REP
+    LOGIN --> API
+    MAIN --> API
+    PAN --> API
+    ASI --> API
+  end
+  subgraph BE["Backend: capas de la API"]
+    direction TB
+    RUT["routes/<br/>rutas REST"]
+    MID["middleware/<br/>autenticación, límite, errores"]
+    SER["services/<br/>lógica del negocio"]
+    DBA["db/<br/>conexión y transacciones"]
+    RUT --> MID --> SER --> DBA
+  end
+  MYSQL[("MySQL 8")]
+  API -- "HTTP · JSON" --> RUT
+  DBA --> MYSQL

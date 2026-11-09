@@ -1,0 +1,62 @@
+classDiagram
+  direction TB
+  class RutasREST {
+    auth, productos, ventas
+    estadisticas, asistente
+  }
+  class Autenticacion {
+    +autenticar(req) usuarioId
+    +limitarIntentos()
+  }
+  class UsuariosService {
+    +registrar(datos)
+    +autenticar(datos)
+    +obtener(id)
+  }
+  class ProductosService {
+    +listar(usuarioId, filtros)
+    +crear(usuarioId, datos)
+    +actualizar(usuarioId, id, datos)
+    +eliminar(usuarioId, id)
+    +ajustarStock(usuarioId, id, datos)
+    +movimientos(usuarioId, id)
+  }
+  class VentasService {
+    +crear(usuarioId, datos)
+    +listar(usuarioId, filtros)
+    +anular(usuarioId, id)
+  }
+  class EstadisticasService {
+    +resumen(usuarioId)
+    +ventasPorDia(usuarioId)
+    +ventasPorPeriodo(usuarioId)
+    +productosTop(usuarioId)
+    +productosMenosVendidos(usuarioId)
+    +stockBajo(usuarioId)
+    +valorInventario(usuarioId)
+  }
+  class AsistenteService {
+    +preguntar(usuarioId, datos)
+  }
+  class ControlDeStock {
+    +cambiarStock(tx, datos)
+  }
+  class BaseDeDatos {
+    +query(sql, params)
+    +execute(sql, params)
+    +transaction(fn)
+  }
+  RutasREST --> Autenticacion
+  RutasREST --> UsuariosService
+  RutasREST --> ProductosService
+  RutasREST --> VentasService
+  RutasREST --> EstadisticasService
+  RutasREST --> AsistenteService
+  ProductosService --> ControlDeStock
+  VentasService --> ControlDeStock
+  AsistenteService --> EstadisticasService
+  UsuariosService --> BaseDeDatos
+  ProductosService --> BaseDeDatos
+  VentasService --> BaseDeDatos
+  EstadisticasService --> BaseDeDatos
+  ControlDeStock --> BaseDeDatos

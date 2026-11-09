@@ -1,0 +1,29 @@
+sequenceDiagram
+  autonumber
+  actor C as Comerciante
+  participant F as Frontend (React)
+  participant A as API (Express)
+  participant V as VentasService
+  participant D as MySQL
+  C->>F: elige productos y toca "Registrar venta"
+  F->>A: POST /api/ventas (token, items, metodoPago)
+  A->>A: verifica el token y valida los datos
+  A->>V: crear(usuarioId, datos)
+  V->>D: BEGIN (transacción)
+  V->>D: busca los productos de la cuenta
+  V->>D: INSERT venta e ítems (precio y costo del momento)
+  loop por cada producto
+    V->>D: UPDATE stock = stock - cantidad (solo si alcanza)
+    V->>D: INSERT movimiento de stock
+  end
+  alt todo el stock alcanza
+    V->>D: COMMIT
+    V-->>A: venta con total y ganancia
+    A-->>F: 201 Created
+    F-->>C: aviso "Venta registrada" y stock actualizado
+  else falta stock en algún producto
+    V->>D: ROLLBACK (no queda nada a medias)
+    V-->>A: error STOCK_INSUFICIENTE
+    A-->>F: 409 Conflict con el mensaje
+    F-->>C: aviso con el stock real disponible
+  end

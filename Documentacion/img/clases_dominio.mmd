@@ -1,0 +1,55 @@
+classDiagram
+  direction LR
+  class Usuario {
+    +int id
+    +string correo
+    +string passwordHash
+    +string nombreDueno
+    +string nombreNegocio
+  }
+  class Categoria {
+    +int id
+    +string nombre
+  }
+  class Producto {
+    +int id
+    +string nombre
+    +string descripcion
+    +int precioCompra
+    +int precioVenta
+    +int stock
+    +int stockMinimo
+    +bool activo
+    +gananciaUnitaria() int
+  }
+  class Venta {
+    +int id
+    +date fecha
+    +int total
+    +string metodoPago
+    +string estado
+    +anular()
+  }
+  class VentaItem {
+    +int id
+    +string nombreProducto
+    +int cantidad
+    +int precioUnitario
+    +int costoUnitario
+    +subtotal() int
+  }
+  class MovimientoStock {
+    +int id
+    +string tipo
+    +int cantidad
+    +int stockResultante
+    +string nota
+  }
+  Usuario "1" --> "*" Categoria : tiene
+  Usuario "1" --> "*" Producto : posee
+  Usuario "1" --> "*" Venta : registra
+  Categoria "0..1" --> "*" Producto : clasifica
+  Venta "1" *-- "1..*" VentaItem : contiene
+  Producto "0..1" --> "*" VentaItem : se vende en
+  Producto "1" --> "*" MovimientoStock : historial
+  Venta "0..1" --> "*" MovimientoStock : origina

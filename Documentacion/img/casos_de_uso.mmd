@@ -1,0 +1,34 @@
+flowchart LR
+  C(["Comerciante<br/>(actor principal)"])
+  IA(["Proveedor de IA<br/>(actor externo, opcional)"])
+  subgraph S["Sistema Vendix"]
+    direction TB
+    U1([Registrarse con correo])
+    U2([Iniciar y cerrar sesión])
+    U3([Gestionar productos<br/>crear, editar, eliminar, buscar])
+    U4([Reponer o ajustar stock])
+    U5([Registrar una venta])
+    U5b([Descontar stock<br/>automáticamente])
+    U6([Anular una venta])
+    U7([Ver historial de ventas])
+    U8([Ver el panel de ventas])
+    U9([Ver inversión y ganancia])
+    U10([Consultar al asistente])
+    U11([Exportar reportes<br/>CSV y PDF])
+    U12([Instalar la app en el celular])
+  end
+  C --- U1
+  C --- U2
+  C --- U3
+  C --- U4
+  C --- U5
+  C --- U6
+  C --- U7
+  C --- U8
+  C --- U10
+  C --- U11
+  C --- U12
+  U5 -. "«include»" .-> U5b
+  U6 -. "«include»" .-> U5b
+  U8 -. "«include»" .-> U9
+  U10 --- IA
