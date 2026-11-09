@@ -39,6 +39,7 @@ En `.env` completa al menos `DB_PASSWORD` (la contraseña de tu MySQL) y `JWT_SE
 
 ```powershell
 docker compose up -d      # levanta MySQL y crea las tablas solo la primera vez
+# para levantar también la API dentro de Docker:  docker compose --profile completo up -d --build
 ```
 
 Usa la contraseña `DB_PASSWORD` de tu `.env` (si la dejas vacía, queda `vendix123`).
@@ -80,8 +81,10 @@ También puedes probar a mano con [`docs/pruebas.http`](docs/pruebas.http) (exte
 npm test
 ```
 
-Son 44 pruebas de la lógica del negocio (stock, ventas, anulaciones, estadísticas, aislamiento entre cuentas, asistente).
-Usan una base SQLite en memoria con el mismo `database/schema.sql`, así que no necesitan MySQL.
+Son **63 pruebas automáticas** (69 con las de sesiones JWT, que se activan solas tras `npm install`): lógica del negocio (stock, ventas,
+anulaciones, estadísticas, asistente), **seguridad** (inyección SQL, aislamiento entre cuentas, contraseñas, límite de intentos, errores) y
+**rendimiento** (1.000 productos y 5.000 ventas). Usan una base SQLite en memoria con el mismo `database/schema.sql`, así que no necesitan MySQL
+(requieren Node 22.13 o superior). Detalle y resultados: `Documentacion/Plan_Pruebas_Vendix.md` (en la raíz del repositorio).
 
 ## Estructura
 
@@ -95,10 +98,10 @@ Codigo/
     db/mysql.js                     conexión a MySQL (consultas y transacciones)
     utils/                          validaciones, fechas, contraseñas, tokens
   database/schema.sql               tablas, restricciones e índices
-  pruebas/                          pruebas automáticas
+  pruebas/                          pruebas automáticas (lógica, seguridad, rendimiento, sesiones)
   scripts/                          init-bd.js (crea la base) y smoke.js (prueba de humo)
   docs/                             arquitectura, modelo de datos (+ diagrama), API, pruebas.http
-  docker-compose.yml                MySQL para desarrollo
+  docker-compose.yml, Dockerfile    MySQL (y la API, con --profile completo) en contenedores
 ```
 
 ## Conexión con el frontend

@@ -1,6 +1,14 @@
-# MySQL listo para desarrollo:   docker compose up -d
-# Crea la base y las tablas solas la primera vez (usa database/schema.sql).
-# Usa DB_PASSWORD y DB_NAME de tu archivo .env.
+# Dos formas de usarlo:
+#
+#   docker compose up -d
+#       Solo MySQL (con las tablas ya creadas). La API la enciendes tú con "npm run dev".
+#       Es lo más cómodo para desarrollar.
+#
+#   docker compose --profile completo up -d --build
+#       MySQL + la API de Vendix, ambos en contenedores (API en http://localhost:3000).
+#       Necesita JWT_SECRET en tu archivo .env.
+#
+# Todo se configura con las variables del archivo .env (ver .env.example).
 services:
   mysql:
     image: mysql:8.0
@@ -15,6 +23,36 @@ services:
     volumes:
       - vendix_mysql:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    profiles: ["completo"]
+    build: .
+    container_name: vendix-api
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      PORT: "3000"
+      DB_HOST: mysql # dentro de Docker, MySQL se llama "mysql"
+      DB_PORT: "3306"
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-vendix123}
+      DB_NAME: ${DB_NAME:-vendix}
+      JWT_SECRET: ${JWT_SECRET:-}
+      JWT_EXPIRA: ${JWT_EXPIRA:-7d}
+      CORS_ORIGENES: ${CORS_ORIGENES:-http://localhost:5173}
+      ZONA_HORARIA: ${ZONA_HORARIA:-America/Santiago}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+      LLM_MODELO: ${LLM_MODELO:-gpt-4o-mini}
+    ports:
+      - "${PORT:-3000}:3000"
 
 volumes:
   vendix_mysql:

@@ -76,7 +76,7 @@ Separar así permite probar la lógica del negocio sin levantar el servidor (ver
 | Validar en todos los casos (ventas, devoluciones) | Stock atómico; **anulación** de ventas (`POST /api/ventas/:id/anular`) |
 | Objetivo 3: más/menos vendidos, ventas por día/semana/mes, tendencias, stock bajo | `/api/estadisticas/*` · `estadisticas.service.js` (la tendencia es la variación frente al período anterior) |
 | Objetivo 4: asistente de IA que procesa los datos y recomienda | `POST /api/asistente/preguntar` · `asistente.service.js` |
-| Objetivo 5: pruebas unitarias del backend e integración | `pruebas/` (`npm test`) y `scripts/smoke.js` (`npm run smoke`) |
+| Objetivo 5: pruebas unitarias, de integración, seguridad y rendimiento | `pruebas/` (`npm test`) y `scripts/smoke.js` (`npm run smoke`) |
 | Objetivo 6: documentación técnica (arquitectura, instalación, código comentado) | `README.md` y esta carpeta `docs/` |
 | Evidencia: diagrama entidad-relación | `docs/modelo-entidad-relacion.png` (fuente: `docs/er.mmd`) |
 
@@ -84,15 +84,15 @@ Separar así permite probar la lógica del negocio sin levantar el servidor (ver
 
 - **Devoluciones parciales** (hoy solo se anula la venta completa).
 - **Reportes PDF/Excel generados en el servidor** (hoy el frontend arma el CSV/PDF con los datos que pide a la API).
-- **Despliegue** en un servicio en la nube (Render, Railway, etc.) con MySQL administrado y HTTPS.
+- **Despliegue** en un servicio en la nube con MySQL administrado y HTTPS (hay `Dockerfile` y `docker-compose.yml` listos; pasos en `Documentacion/Manual_Tecnico_Vendix.md`).
 - Límite de intentos compartido entre varios servidores (por ejemplo con Redis), si algún día se escala.
 - Migraciones de base de datos versionadas (hoy `schema.sql` crea todo desde cero).
 
 ## Cómo se verificó este código
 
-- `npm test`: **44 pruebas automáticas** de la lógica (usuarios, productos, ventas, estadísticas, asistente).
-  Corren sobre **SQLite en memoria** usando el mismo `database/schema.sql` (con dos ajustes de sintaxis).
-  Se usa SQLite en las pruebas para no necesitar un servidor MySQL; **la primera vez que se corra contra MySQL real conviene
-  ejecutar `npm run smoke`** para confirmar que todo funciona también ahí.
+- `npm test`: **63 pruebas automáticas** (69 con las de sesiones JWT, que se activan al instalar las dependencias): lógica del negocio, seguridad
+  (inyección SQL, aislamiento entre cuentas, contraseñas, límite de intentos, errores) y rendimiento (1.000 productos y 5.000 ventas).
+  Corren sobre **SQLite en memoria** usando el mismo `database/schema.sql` (con dos ajustes de sintaxis). Se usa SQLite en las pruebas para no
+  necesitar un servidor MySQL; **`npm run smoke` confirma que todo funciona también con MySQL real**.
 - Las rutas HTTP se revisaron con un flujo completo de punta a punta (registro → productos → ventas → estadísticas →
   asistente → anulación → aislamiento entre cuentas) y `npm run smoke` repite lo esencial contra el servidor real.
