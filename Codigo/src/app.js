@@ -8,6 +8,7 @@ import { productosRoutes } from "./routes/productos.routes.js";
 import { ventasRoutes } from "./routes/ventas.routes.js";
 import { estadisticasRoutes } from "./routes/estadisticas.routes.js";
 import { asistenteRoutes } from "./routes/asistente.routes.js";
+import { insightsRoutes } from "./routes/insights.routes.js";
 
 // Crea la aplicación Express. Recibe la base de datos y la configuración
 // (así se puede probar con otra base de datos).
@@ -34,6 +35,7 @@ export function crearApp({ db, config, opciones = {} }) {
   app.use("/api/ventas", auth, ventasRoutes(servicios));
   app.use("/api/estadisticas", auth, estadisticasRoutes(servicios));
   app.use("/api/asistente", auth, asistenteRoutes(servicios));
+  app.use("/api/insights", auth, insightsRoutes(servicios));
 
   app.use(rutaNoEncontrada);
   app.use(manejarErrores());
