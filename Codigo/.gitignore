@@ -1,4 +1,14 @@
-node_modules
+node_modules/
 .env
+.env.*
+!.env.example
 *.log
 .DS_Store
+
+# Certificados y claves
+certs/
+*.pem
+*.key
+
+# Archivos de compilación
+dist/
